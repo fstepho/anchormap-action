@@ -1,0 +1,10 @@
+{
+	"name": "anchormap-action",
+	"version": "0.0.0",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"lint:shell": "bash -n scripts/run-anchormap.sh",
+		"test": "node --test test/run-anchormap.test.mjs"
+	}
+}
