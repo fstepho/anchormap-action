@@ -1,0 +1,86 @@
+name: AnchorMap
+description: Run AnchorMap traceability audit and produce PR-ready artifacts.
+
+inputs:
+  anchormap-version:
+    description: Pinned npm version of anchormap to install.
+    required: false
+    default: "1.2.2"
+  node-version:
+    description: Node.js version used to run anchormap.
+    required: false
+    default: "22"
+  policy:
+    description: Path to anchormap policy file.
+    required: false
+    default: anchormap.policy.yaml
+  base-scan:
+    description: Optional explicit base scan artifact path.
+    required: false
+    default: ""
+  upload-artifacts:
+    description: Whether to upload generated artifacts.
+    required: false
+    default: "true"
+  fail-on-policy:
+    description: Whether exit code 5 should fail the workflow.
+    required: false
+    default: "true"
+
+outputs:
+  decision:
+    description: Policy decision, pass or fail.
+    value: ${{ steps.anchormap.outputs.decision }}
+  analysis_health:
+    description: Analysis health from the check result.
+    value: ${{ steps.anchormap.outputs.analysis_health }}
+  policy_exit:
+    description: Exit code returned by anchormap check.
+    value: ${{ steps.anchormap.outputs.policy_exit }}
+  scan_path:
+    description: Path to generated scan JSON.
+    value: ${{ steps.anchormap.outputs.scan_path }}
+  check_path:
+    description: Path to generated check JSON.
+    value: ${{ steps.anchormap.outputs.check_path }}
+  diff_path:
+    description: Path to generated diff JSON, when produced.
+    value: ${{ steps.anchormap.outputs.diff_path }}
+  report_path:
+    description: Path to generated Markdown report.
+    value: ${{ steps.anchormap.outputs.report_path }}
+
+runs:
+  using: composite
+  steps:
+    - name: Set up Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+
+    - name: Install AnchorMap
+      shell: bash
+      run: npm install --global "anchormap@${ANCHORMAP_VERSION}"
+      env:
+        ANCHORMAP_VERSION: ${{ inputs.anchormap-version }}
+
+    - name: Run AnchorMap
+      id: anchormap
+      shell: bash
+      run: ${{ github.action_path }}/scripts/run-anchormap.sh
+      env:
+        ANCHORMAP_POLICY: ${{ inputs.policy }}
+        ANCHORMAP_BASE_SCAN: ${{ inputs.base-scan }}
+
+    - name: Upload AnchorMap artifacts
+      if: ${{ always() && inputs.upload-artifacts == 'true' }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: anchormap-artifacts
+        if-no-files-found: ignore
+        path: .anchormap/action-output/
+
+    - name: Fail on AnchorMap policy violation
+      if: ${{ inputs.fail-on-policy == 'true' && steps.anchormap.outputs.policy_exit == '5' }}
+      shell: bash
+      run: exit 5
