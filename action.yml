@@ -4,8 +4,7 @@ description: Run AnchorMap traceability audit and produce PR-ready artifacts.
 inputs:
   anchormap-version:
     description: Pinned npm version of anchormap to install.
-    required: false
-    default: "1.2.2"
+    required: true
   node-version:
     description: Node.js version used to run anchormap.
     required: false
@@ -79,6 +78,7 @@ runs:
         name: anchormap-artifacts
         if-no-files-found: ignore
         path: .anchormap/action-output/
+        include-hidden-files: true
 
     - name: Fail on AnchorMap policy violation
       if: ${{ inputs.fail-on-policy == 'true' && steps.anchormap.outputs.policy_exit == '5' }}

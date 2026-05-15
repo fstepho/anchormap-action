@@ -11,12 +11,12 @@ comments, or redefine AnchorMap report semantics.
 The current preview is available from the immutable preview tag:
 
 ```text
-fstepho/anchormap-action@v0-preview.2
+fstepho/anchormap-action@v0-preview.3
 ```
 
-The preview pins `anchormap@1.2.2` by default. There is no stable Action
-release, Marketplace publication, or merge guarantee yet. Use this tag only for
-preview testing.
+The preview examples pin `anchormap@1.2.2`. There is no stable Action release,
+Marketplace publication, or merge guarantee yet. Use this tag only for preview
+testing.
 
 A public demo workflow and scenario PRs are available in
 [`fstepho/anchormap-h3-demo`](https://github.com/fstepho/anchormap-h3-demo):
@@ -41,7 +41,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: fstepho/anchormap-action@v0-preview.2
+      - uses: fstepho/anchormap-action@v0-preview.3
         with:
           anchormap-version: "1.2.2"
           policy: anchormap.policy.yaml
@@ -52,7 +52,7 @@ jobs:
 For diff output, provide an explicit baseline scan artifact from the repository:
 
 ```yaml
-- uses: fstepho/anchormap-action@v0-preview.2
+- uses: fstepho/anchormap-action@v0-preview.3
   with:
     anchormap-version: "1.2.2"
     policy: anchormap.policy.yaml
@@ -63,7 +63,7 @@ For diff output, provide an explicit baseline scan artifact from the repository:
 
 | Input | Default | Description |
 | --- | --- | --- |
-| `anchormap-version` | `1.2.2` | Pinned npm version of `anchormap` to install. |
+| `anchormap-version` | required | Pinned npm version of `anchormap` to install. |
 | `node-version` | `22` | Node.js version used to run AnchorMap. |
 | `policy` | `anchormap.policy.yaml` | Explicit policy file path. |
 | `base-scan` | empty | Explicit baseline scan artifact for diff mode. |
