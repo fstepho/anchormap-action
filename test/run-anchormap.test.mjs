@@ -44,8 +44,17 @@ test("exits on technical check failure without report", async () => {
 
 	assert.equal(result.code, 2);
 	assert.match(result.stderr, /technical exit code 2/);
-	await stat(join(result.cwd, ".anchormap/action-output/anchormap.check.json"));
+	await assert.rejects(stat(join(result.cwd, ".anchormap/action-output/anchormap.check.json")));
 	await assert.rejects(stat(join(result.cwd, ".anchormap/action-output/anchormap.report.md")));
+});
+
+test("exits on technical scan failure without publishing scan artifacts", async () => {
+	const result = await runScript({ scenario: "scan-fail" });
+
+	assert.equal(result.code, 3);
+	assert.match(result.stderr, /invalid config/);
+	await assert.rejects(stat(join(result.cwd, ".anchormap/action-output/anchormap.scan.json")));
+	await assert.rejects(stat(join(result.cwd, ".anchormap/action-output/anchormap.check.json")));
 });
 
 test("generates diff and includes it in the report command when base scan is supplied", async () => {
@@ -67,6 +76,7 @@ test("propagates missing base scan as a technical diff failure", async () => {
 
 	assert.equal(result.code, 4);
 	assert.match(result.stderr, /missing base scan/);
+	await assert.rejects(stat(join(result.cwd, ".anchormap/action-output/anchormap.diff.json")));
 	await assert.rejects(stat(join(result.cwd, ".anchormap/action-output/anchormap.report.md")));
 });
 
@@ -127,6 +137,10 @@ fs.appendFileSync(process.env.ANCHORMAP_TEST_COMMANDS, JSON.stringify(args) + "\
 const command = args[0];
 const scenario = process.env.ANCHORMAP_TEST_SCENARIO;
 if (command === "scan") {
+  if (scenario === "scan-fail") {
+    process.stderr.write("invalid config\\n");
+    process.exit(3);
+  }
   process.stdout.write('{"schema_version":4,"analysis_health":"clean"}\\n');
   process.exit(0);
 }

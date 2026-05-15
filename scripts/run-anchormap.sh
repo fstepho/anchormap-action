@@ -2,8 +2,10 @@
 set -euo pipefail
 
 output_dir=".anchormap/action-output"
-rm -rf "$output_dir"
-mkdir -p "$output_dir"
+tmp_dir=".anchormap/action-tmp"
+rm -rf "$output_dir" "$tmp_dir"
+mkdir -p "$output_dir" "$tmp_dir"
+trap 'rm -rf "$tmp_dir"' EXIT
 
 scan_path="$output_dir/anchormap.scan.json"
 check_path="$output_dir/anchormap.check.json"
@@ -11,19 +13,28 @@ diff_path="$output_dir/anchormap.diff.json"
 report_path="$output_dir/anchormap.report.md"
 generated_diff="false"
 
-anchormap scan --json >"$scan_path"
+scan_tmp="$tmp_dir/anchormap.scan.json"
+check_tmp="$tmp_dir/anchormap.check.json"
+diff_tmp="$tmp_dir/anchormap.diff.json"
+report_tmp="$tmp_dir/anchormap.report.md"
+
+anchormap scan --json >"$scan_tmp"
+mv "$scan_tmp" "$scan_path"
 
 set +e
 anchormap check \
 	--scan "$scan_path" \
 	--policy "${ANCHORMAP_POLICY}" \
-	--json >"$check_path"
+	--json >"$check_tmp"
 check_exit="$?"
 set -e
 
 case "$check_exit" in
-	0 | 5) ;;
+	0 | 5)
+		mv "$check_tmp" "$check_path"
+		;;
 	*)
+		rm -f "$check_tmp"
 		echo "anchormap check failed with technical exit code ${check_exit}; no PolicyResult-compatible report will be generated." >&2
 		exit "$check_exit"
 		;;
@@ -33,19 +44,22 @@ if [[ -n "${ANCHORMAP_BASE_SCAN:-}" ]]; then
 	anchormap diff \
 		--base "$ANCHORMAP_BASE_SCAN" \
 		--head "$scan_path" \
-		--json >"$diff_path"
+		--json >"$diff_tmp"
+	mv "$diff_tmp" "$diff_path"
 	generated_diff="true"
 
 	anchormap report \
 		--scan "$scan_path" \
 		--check "$check_path" \
 		--diff "$diff_path" \
-		--format markdown >"$report_path"
+		--format markdown >"$report_tmp"
+	mv "$report_tmp" "$report_path"
 else
 	anchormap report \
 		--scan "$scan_path" \
 		--check "$check_path" \
-		--format markdown >"$report_path"
+		--format markdown >"$report_tmp"
+	mv "$report_tmp" "$report_path"
 fi
 
 if [[ -n "${GITHUB_STEP_SUMMARY:-}" ]]; then
