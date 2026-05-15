@@ -6,6 +6,27 @@ This composite action is an orchestration layer over the AnchorMap CLI. It does
 not upload source code to a service, infer a baseline from Git refs, create PR
 comments, or redefine AnchorMap report semantics.
 
+## Preview Status
+
+The current preview is available from the draft branch:
+
+```text
+fstepho/anchormap-action@task/gha-1-composite-action
+```
+
+The preview pins `anchormap@1.2.2` by default. There is no stable Action tag,
+release, Marketplace publication, or merge guarantee yet. Use the branch ref
+only for preview testing.
+
+A public demo workflow and scenario PRs are available in
+[`fstepho/anchormap-h3-demo`](https://github.com/fstepho/anchormap-h3-demo):
+
+- workflow base: <https://github.com/fstepho/anchormap-h3-demo/pull/1>
+- clean scenario: <https://github.com/fstepho/anchormap-h3-demo/pull/2>
+- unmapped anchor scenario: <https://github.com/fstepho/anchormap-h3-demo/pull/3>
+- stale mapping scenario: <https://github.com/fstepho/anchormap-h3-demo/pull/4>
+- degraded analysis scenario: <https://github.com/fstepho/anchormap-h3-demo/pull/5>
+
 ## Usage
 
 ```yaml
@@ -77,3 +98,29 @@ Generated only when `base-scan` is supplied:
 
 The job summary appends the generated Markdown report. The Markdown file remains
 the canonical AnchorMap report artifact.
+
+## Policy Example
+
+```yaml
+version: 1
+fail_on:
+  analysis_health: degraded
+  finding_kinds:
+    - unmapped_anchor
+    - stale_mapping_anchor
+thresholds:
+  min_covered_product_file_percent: 1
+  max_untraced_product_files: 1000
+```
+
+Policy failures exit `anchormap check` with code `5`. The Action still writes
+artifacts and the job summary before the final `fail-on-policy` step decides
+whether the workflow itself should fail.
+
+## Limits
+
+- No PR comments are created.
+- No source code is uploaded to an AnchorMap service.
+- No baseline is inferred from Git refs or workflow history.
+- No bundle, JUnit, SARIF, GitHub App, or SaaS upload behavior is part of this
+  preview Action.
