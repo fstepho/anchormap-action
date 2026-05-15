@@ -11,7 +11,7 @@ comments, or redefine AnchorMap report semantics.
 The current preview is available from the immutable preview tag:
 
 ```text
-fstepho/anchormap-action@v0-preview.1
+fstepho/anchormap-action@v0-preview.2
 ```
 
 The preview pins `anchormap@1.2.2` by default. There is no stable Action
@@ -41,7 +41,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: fstepho/anchormap-action@v0-preview.1
+      - uses: fstepho/anchormap-action@v0-preview.2
         with:
           anchormap-version: "1.2.2"
           policy: anchormap.policy.yaml
@@ -52,7 +52,7 @@ jobs:
 For diff output, provide an explicit baseline scan artifact from the repository:
 
 ```yaml
-- uses: fstepho/anchormap-action@v0-preview.1
+- uses: fstepho/anchormap-action@v0-preview.2
   with:
     anchormap-version: "1.2.2"
     policy: anchormap.policy.yaml
