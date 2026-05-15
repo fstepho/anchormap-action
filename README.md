@@ -1,5 +1,41 @@
 # AnchorMap GitHub Action
 
+## Give a 5-minute first reaction
+
+AnchorMap detects spec-to-code traceability drift in TypeScript PRs.
+
+You do not need to install anything to react to the preview.
+
+Start here:
+
+- Feedback issue: https://github.com/fstepho/anchormap/issues/5
+- Clean demo PR: https://github.com/fstepho/anchormap-h3-demo/pull/2
+- New unmapped anchor: https://github.com/fstepho/anchormap-h3-demo/pull/3
+- Stale mapping: https://github.com/fstepho/anchormap-h3-demo/pull/4
+- Degraded analysis: https://github.com/fstepho/anchormap-h3-demo/pull/5
+
+Useful reaction:
+
+1. Did you understand the problem?
+2. Did the PR report make sense?
+3. Would you try this on a TypeScript repo?
+4. What confused you?
+
+## The problem
+
+In many TypeScript projects, product/API/spec documents change separately from code.
+
+During review, it is hard to see whether:
+
+- a new requirement-like statement was added without code mapping;
+- an old mapping points to something that no longer exists;
+- a PR reduced traceability coverage;
+- the report is still reliable enough to trust.
+
+AnchorMap makes those cases visible in CI as local artifacts and a PR-readable Markdown report.
+
+## What This Action Does
+
 Run AnchorMap in GitHub Actions and produce PR-ready local artifacts.
 
 This composite action is an orchestration layer over the AnchorMap CLI. It does
