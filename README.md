@@ -8,15 +8,15 @@ comments, or redefine AnchorMap report semantics.
 
 ## Preview Status
 
-The current preview is available from the draft branch:
+The current preview is available from the immutable preview tag:
 
 ```text
-fstepho/anchormap-action@task/gha-1-composite-action
+fstepho/anchormap-action@v0-preview.1
 ```
 
-The preview pins `anchormap@1.2.2` by default. There is no stable Action tag,
-release, Marketplace publication, or merge guarantee yet. Use the branch ref
-only for preview testing.
+The preview pins `anchormap@1.2.2` by default. There is no stable Action
+release, Marketplace publication, or merge guarantee yet. Use this tag only for
+preview testing.
 
 A public demo workflow and scenario PRs are available in
 [`fstepho/anchormap-h3-demo`](https://github.com/fstepho/anchormap-h3-demo):
@@ -41,7 +41,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - uses: fstepho/anchormap-action@task/gha-1-composite-action
+      - uses: fstepho/anchormap-action@v0-preview.1
         with:
           anchormap-version: "1.2.2"
           policy: anchormap.policy.yaml
@@ -52,7 +52,7 @@ jobs:
 For diff output, provide an explicit baseline scan artifact from the repository:
 
 ```yaml
-- uses: fstepho/anchormap-action@task/gha-1-composite-action
+- uses: fstepho/anchormap-action@v0-preview.1
   with:
     anchormap-version: "1.2.2"
     policy: anchormap.policy.yaml
