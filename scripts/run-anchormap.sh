@@ -17,6 +17,7 @@ scan_tmp="$tmp_dir/anchormap.scan.json"
 check_tmp="$tmp_dir/anchormap.check.json"
 diff_tmp="$tmp_dir/anchormap.diff.json"
 report_tmp="$tmp_dir/anchormap.report.md"
+summary_tmp="$tmp_dir/github-step-summary.md"
 
 anchormap scan --json >"$scan_tmp"
 mv "$scan_tmp" "$scan_path"
@@ -63,7 +64,31 @@ else
 fi
 
 if [[ -n "${GITHUB_STEP_SUMMARY:-}" ]]; then
-	cat "$report_path" >>"$GITHUB_STEP_SUMMARY"
+	node -e '
+const fs = require("node:fs");
+const [scanPath, checkPath, diffPath, policyExit, generatedDiff] = process.argv.slice(1);
+const scan = JSON.parse(fs.readFileSync(scanPath, "utf8"));
+const check = JSON.parse(fs.readFileSync(checkPath, "utf8"));
+const lines = [
+	"## AnchorMap Action summary",
+	`- Policy decision: ${check.decision}`,
+	`- Analysis health: ${check.analysis_health}`,
+	`- Policy exit: ${policyExit}`,
+	`- Scan findings: ${Array.isArray(scan.findings) ? scan.findings.length : 0}`,
+	`- Policy violations: ${Array.isArray(check.violations) ? check.violations.length : 0}`,
+];
+if (generatedDiff === "true") {
+	const diff = JSON.parse(fs.readFileSync(diffPath, "utf8"));
+	lines.push(
+		`- Diff comparability: ${diff.comparability}`,
+		`- Findings added: ${Array.isArray(diff.findings?.added) ? diff.findings.added.length : 0}`,
+		`- Findings removed: ${Array.isArray(diff.findings?.removed) ? diff.findings.removed.length : 0}`,
+	);
+}
+lines.push("", "---", "");
+process.stdout.write(`${lines.join("\n")}\n`);
+' "$scan_path" "$check_path" "$diff_path" "$check_exit" "$generated_diff" >"$summary_tmp"
+	cat "$summary_tmp" "$report_path" >>"$GITHUB_STEP_SUMMARY"
 fi
 
 decision="$(node -e 'const fs=require("node:fs"); const j=JSON.parse(fs.readFileSync(process.argv[1],"utf8")); process.stdout.write(String(j.decision ?? ""));' "$check_path")"

@@ -53,14 +53,14 @@ comments, or redefine AnchorMap report semantics.
 
 ## Preview Status
 
-The current preview is available from the immutable preview tag:
+The current preview is available from this preview tag:
 
 ```text
-fstepho/anchormap-action@v0-preview.3
+fstepho/anchormap-action@v0-preview.4
 ```
 
 The preview examples pin `anchormap@1.2.2`. There is no stable Action release,
-Marketplace publication, or merge guarantee yet. Use this tag only for preview
+Marketplace publication, or committed merge path yet. Use this tag only for preview
 testing.
 
 A public demo workflow and scenario PRs are available in
@@ -84,9 +84,9 @@ jobs:
   anchormap:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - uses: fstepho/anchormap-action@v0-preview.3
+      - uses: fstepho/anchormap-action@v0-preview.4
         with:
           anchormap-version: "1.2.2"
           policy: anchormap.policy.yaml
@@ -97,7 +97,7 @@ jobs:
 For diff output, provide an explicit baseline scan artifact from the repository:
 
 ```yaml
-- uses: fstepho/anchormap-action@v0-preview.3
+- uses: fstepho/anchormap-action@v0-preview.4
   with:
     anchormap-version: "1.2.2"
     policy: anchormap.policy.yaml
@@ -141,8 +141,9 @@ Generated only when `base-scan` is supplied:
 
 - `anchormap.diff.json`
 
-The job summary appends the generated Markdown report. The Markdown file remains
-the canonical AnchorMap report artifact.
+The job summary starts with a concise Action summary, then includes the
+generated Markdown report. The Markdown file remains the canonical AnchorMap
+report artifact.
 
 ## Policy Example
 
