@@ -166,6 +166,15 @@ Policy failures exit `anchormap check` with code `5`. The Action still writes
 artifacts and the job summary before the final `fail-on-policy` step decides
 whether the workflow itself should fail.
 
+Recommended CI gate mode is the default: leave `fail-on-policy` unset or set it
+to `"true"`. A policy `FAIL` then becomes a failed GitHub check after artifacts
+and the job summary have been handled.
+
+Advisory mode is explicit: set `fail-on-policy: "false"` only when you want to
+explore the report without blocking the workflow. In that mode, read
+`policy_exit` and the job summary for the AnchorMap decision; the GitHub check
+can remain green even when the policy decision is `FAIL`.
+
 ## Limits
 
 - No PR comments are created.
